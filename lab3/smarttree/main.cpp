@@ -1,13 +1,12 @@
 //
 // Created by Mateusz on 16.03.2017.
-//
 #include "SmartTree.h"
 #include <string>
 #include <memory>
 #include <map>
 #include <iostream>
 #include <sstream>
-//All test works
+
 using namespace datastructures;
 int main(){
     std::stringstream ss;
