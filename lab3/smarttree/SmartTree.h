@@ -1,6 +1,7 @@
 //
 // Created by Mateusz on 20.03.2017.
 //
+//All test works
 #include <string>
 #include <memory>
 #include <map>
