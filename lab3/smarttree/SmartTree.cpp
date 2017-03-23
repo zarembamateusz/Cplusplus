@@ -58,7 +58,7 @@ namespace datastructures {
             *ss += "[none";
     }
 
-    std::string DumpTree(const std::unique_ptr<SmartTree> &tree) {
+    std::string DumpTree(const std::unique_ptr<SmartTree> &tree){
         int k = 0;
         int l = 0;
         std::string ss;
