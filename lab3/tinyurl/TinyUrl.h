@@ -7,6 +7,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <string>
 
 #ifndef JIMP_EXERCISES_TINYURL_H
 #define JIMP_EXERCISES_TINYURL_H
@@ -18,15 +19,7 @@
 #endif //JIMP_EXERCISES_TINYURL_H
 namespace tinyurl{
     struct TinyUrlCodec{
-        //std::map<std::string,string> dane;
-        //std::string llong;
-        //std::string sshort;
-        //std::unique_ptr <TinyUrlCodec> next;
-        std::vector<std::string> llong;
-        std::vector<std::string> sshort;
-        int licznik;
-
-
+        std::map<std::string,std::string> dane;
     };
     std::unique_ptr<TinyUrlCodec> Init();
     void NextHash(std::array<char, 6> *state);
