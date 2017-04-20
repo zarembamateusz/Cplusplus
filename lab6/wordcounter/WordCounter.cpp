@@ -112,18 +112,20 @@ namespace datastructures {
     }
 
     WordCounter WordCounter::FromInputStream(std::ifstream &stream_) const{
-        std::string nowy;
-        stream_>>nowy;
+        std::string stream_string_;
+        while(!stream_.eof()){
+            getline(stream_,stream_string_);
+        }
         WordCounter new_counts;
         std::string word_;
-        for(int i=0;i<nowy.size();i++){
+        for(int i=0;i<stream_string_.size();i++){
 
-            if((int)nowy[i]==32) {
+            if((int)stream_string_[i]==32) {
                 new_counts.AddWord(word_);
                 word_ = "";
 
-            }else if(((int)nowy[i]>47&&(int)nowy[i]<58)||((int)nowy[i]>64&&(int)nowy[i]<91)||((int)nowy[i]>96&&(int)nowy[i]<1230)){
-                word_+=nowy[i];
+            }else if(((int)stream_string_[i]>47&&(int)stream_string_[i]<58)||((int)stream_string_[i]>64&&(int)stream_string_[i]<91)||((int)stream_string_[i]>96&&(int)stream_string_[i]<1230)){
+                word_+=stream_string_[i];
             }
         }
         return new_counts;
