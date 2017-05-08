@@ -5,22 +5,28 @@
 #ifndef JIMP_EXERCISES_WYJATKI_H
 #define JIMP_EXERCISES_WYJATKI_H
 
-namespace moviesubs {
+#include <stdexcept>
+namespace moviesubs { 
     class NegativeFrameAfterShift {
 
     };
-
-    class SubtitleEndBeforeStart {
+    class SubtitleEndBeforeStart: public std::runtime_error {
     public:
-        SubtitleEndBeforeStart(std::string line, int *e);
-        int const LineAt();
-        int e_;
+        SubtitleEndBeforeStart(const std::string &m, int line): std::runtime_error("At line " + std::to_string(line) + ": " + m) { 
+            line_ = line; 
+        }
+        int LineAt() const { return line_;};
 
+    private:
+           int line_ = 0;
     };
-
     class InvalidSubtitleLineFormat {
 
     };
+    class OutOfOrderFrames {
+
+    };
 }
+
 
 #endif //JIMP_EXERCISES_WYJATKI_H

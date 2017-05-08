@@ -1,7 +1,7 @@
 
 project(moviesubtitles)
 
-set(HEDEAR_FILES MovieSubtitles.h MicroDvdSubtitles.h SubRipSubtitles.h Wyjatki.h)
+set(HEDEAR_FILES MovieSubtitles.h MicroDvdSubtitles.h SubRipSubtitles.h Wyjatki.h inherited_function.h)
 set(SOURCE_FILES MovieSubtitles.cpp MicroDvdSubtitles.cpp SubRipSubtitles.cpp Wyjatki.cpp)
 
 add_library(libmoviesubtitles STATIC ${SOURCE_FILES})
