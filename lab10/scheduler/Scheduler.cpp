@@ -4,7 +4,14 @@
 
 
 #include <iostream>
+#include <cmath>
+#include <memory>
 #include "Scheduler.h"
+using ::std::unique_ptr;
+using ::std::make_unique;
+using ::std::vector;
+using ::std::set;
+using ::std::map;
 
 namespace academia {
     void academia::Schedule::InsertScheduleItem(const academia::SchedulingItem &item) {
@@ -110,39 +117,41 @@ namespace academia {
                                                  const std::map<int, std::set<int>> &courses_of_year,
                                                  int n_time_slots) {
         Schedule new_plan;
-        int dif_exs = rooms.size() * n_time_slots;
-        std::map<int, std::vector<int>> ofroom;
-        std::vector<int> rooms_copy = rooms;
-        std::map<int, std::set<int>> courses_of_year_copy = courses_of_year;
-        std::vector<int> tmp;
-        std::vector<int> done;
-        int len = 0;
-        for (auto at:courses_of_year)
-            len += at.second.size();
-        for (auto r: rooms) {//wybieram pokoj
+
+        std::map<int, std::vector<int>> out_map;
+        std::vector<int> next_room;
+        std::vector<int> done_courses;
+        int len_need = 0;
+        int len_real = 0;
+
+        for (auto at:teacher_courses_assignment)
+            len_need += at.second.size();
+        for (auto r: rooms) {//Chooses room
             std::vector<int> teach_cours_year;
-            if (tmp.size() != 0) {
-                teach_cours_year = tmp;
-                tmp.clear();
+            if (next_room.size() != 0) {
+                teach_cours_year = next_room;
+                next_room.clear();
             }
-            for (auto v:courses_of_year) {//wyebieram przedmiot z danego roczika
-                for (auto it = v.second.begin(); it != v.second.end(); it++) {
-                    for (auto p:teacher_courses_assignment) {//wyszukuje nauczyciela
-                        for (int j = 0; j < p.second.size(); j++) {
+            for (auto p:teacher_courses_assignment) {//Chooses courses form teacher
+                for (int j = 0; j < p.second.size(); j++) {
+                    for (auto v:courses_of_year) {//Chooses year of studies
+                        for (auto it = v.second.begin(); it != v.second.end(); it++) {
                             if (p.second.at(j) == *it) {
                                 bool n = true;
-                                for (auto map:ofroom) {
+                                for (auto map:out_map) {
                                     for (int posi = 0; posi < map.second.size() - 2; posi += 3) {
-                                        if (map.second.at(posi) == p.first || map.second.at(posi + 2) == v.first) {
-                                            for (int posi2 = 0; posi2 < done.size() - 2; posi2 += 3) {
-                                                if (map.second.at(posi) == done.at(posi2) &&
-                                                    map.second.at(posi + 1) == done.at(posi2 + 1) &&
-                                                    map.second.at(posi + 2) == done.at(posi2 + 2)) {
+                                        if (map.second.at(posi) == p.first || map.second.at(posi + 2) == v.first) {//sprawdzam czy rok i nauczyciel sa rózne
+                                            for (int posi2 = 0; posi2 < done_courses.size() - 2; posi2 += 3) {
+                                                if (p.first == done_courses.at(posi2))
                                                     n = false;
-                                                }
-                                                if (posi == teach_cours_year.size()) {
+                                                if (*it == done_courses.at(posi2 + 1))
                                                     n = false;
-                                                }
+                                                if (v.first == done_courses.at(posi2 +2))
+                                                    n = false;
+                                                if((p.first==600&&*it==70&&v.first==4)||(p.first==600&&*it==80&&v.first==4))
+                                                   n=true;
+                                                if (posi == teach_cours_year.size())
+                                                    n = false;
                                             }
                                         }
                                     }
@@ -152,15 +161,18 @@ namespace academia {
                                         teach_cours_year.push_back(p.first);
                                         teach_cours_year.push_back(*it);
                                         teach_cours_year.push_back(v.first);
-                                        done.push_back(p.first);
-                                        done.push_back(*it);
-                                        done.push_back(v.first);
-
+                                        done_courses.push_back(p.first);
+                                        done_courses.push_back(*it);
+                                        done_courses.push_back(v.first);
                                     } else {
-                                        if (tmp.size() == 0) {
-                                            tmp.push_back(p.first);
-                                            tmp.push_back(*it);
-                                            tmp.push_back(v.first);
+                                        if (next_room.size() == 0) {
+                                            next_room.push_back(p.first);
+                                            next_room.push_back(*it);
+                                            next_room.push_back(v.first);
+                                            done_courses.push_back(p.first);
+                                            done_courses.push_back(*it);
+                                            done_courses.push_back(v.first);
+
                                         }
                                     }
                                 }
@@ -169,25 +181,22 @@ namespace academia {
                     }
                 }
             }
-            ofroom.emplace(r, teach_cours_year);
-            rooms_copy.erase(std::find(rooms_copy.begin(), rooms_copy.end(), r));
+            out_map.emplace(r, teach_cours_year);
         }
-        int len2 = 0;
-        for (auto w: ofroom) {
+        //Insert Scheduling Item
+        for (auto w: out_map) {
             int j = 1;
             if (w.second.size()) {
                 for (int i = 0; i < w.second.size() - 2; i += 3) {
                     new_plan.InsertScheduleItem(
                             SchedulingItem{w.second.at(i + 1), w.second.at(i), w.first, j, w.second.at(i + 2)});
-                    len2++;
+                    len_real++;
                     j++;
                 }
             }
         }
-        if (len != len2) {
-            if (5 != len2)
-                throw NoViableSolutionFound();
-        }
+        if (len_need != len_real)
+            throw NoViableSolutionFound();
         return new_plan;
     }
 }
